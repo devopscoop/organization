@@ -1,12 +1,14 @@
 # Bootstrapping an Enterprise
 
-A decentralized enterprise should have code in multiple online source code management (SCM) platforms. We chose:
+## Source Code Management (SCM)
+
+A decentralized enterprise should have code in multiple online SCM platforms. We chose:
 
 * [codeberg.org](https://codeberg.org/), because it's ["an open community of free software enthusiasts providing a humane, non-commercial and privacy-friendly alternative to commercial services such as GitHub."](https://docs.codeberg.org/getting-started/what-is-codeberg/)
 * [gitlab.com](https://gitlab.com/), because they ["been firm believers in remote work, open source, DevSecOps, and iteration."](https://about.gitlab.com/company/)
 * [github.com](https://github.com/), because they're currently the most popular platform, and we want to reach as large an audience as possible.
 
-To do this, we created these organizations/groups (TODO: use SCMs' APIs to script org creation):
+To do this, we created these organizations/groups:
 
 * https://codeberg.org/devopscoop
 * https://gitlab.com/devopscoop
@@ -20,7 +22,7 @@ cd enterprise
 git init
 ```
 
-Created empty `enterprise` repositories/projects in each of the SCMs. (TODO: Script repo creation with APIs)
+Created empty `enterprise` repositories/projects in each of the SCMs.
 
 Then ran this snippet to create git remotes for each of the SCMs:
 
@@ -46,3 +48,15 @@ then run:
 ```
 git pushall
 ```
+
+## Password Management
+
+[Bitwarden](https://bitwarden.com)
+
+## Email
+
+[Migadu](https://migadu.com/)
+
+## DNS
+
+We're using the domain registrar's default DNS: https://manage30.encirca.com/
