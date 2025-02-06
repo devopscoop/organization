@@ -4,15 +4,15 @@
 
 A decentralized enterprise should have code in multiple online SCM platforms. We chose:
 
-* [codeberg.org](https://codeberg.org/), because it's ["an open community of free software enthusiasts providing a humane, non-commercial and privacy-friendly alternative to commercial services such as GitHub."](https://docs.codeberg.org/getting-started/what-is-codeberg/)
-* [gitlab.com](https://gitlab.com/), because they ["been firm believers in remote work, open source, DevSecOps, and iteration."](https://about.gitlab.com/company/)
-* [github.com](https://github.com/), because they're currently the most popular platform, and we want to reach as large an audience as possible.
+- [codeberg.org](https://codeberg.org/), because it's ["an open community of free software enthusiasts providing a humane, non-commercial and privacy-friendly alternative to commercial services such as GitHub."](https://docs.codeberg.org/getting-started/what-is-codeberg/)
+- [gitlab.com](https://gitlab.com/), because they ["been firm believers in remote work, open source, DevSecOps, and iteration."](https://about.gitlab.com/company/)
+- [github.com](https://github.com/), because they're currently the most popular platform, and we want to reach as large an audience as possible.
 
 To do this, we created these organizations/groups:
 
-* https://codeberg.org/devopscoop
-* https://gitlab.com/devopscoop
-* https://github.com/devopscoop
+- https://codeberg.org/devopscoop
+- https://gitlab.com/devopscoop
+- https://github.com/devopscoop
 
 Then created this `enterprise` git repo locally with:
 
