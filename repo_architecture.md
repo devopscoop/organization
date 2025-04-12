@@ -233,18 +233,6 @@ This feels the closest to a common sense structure to me, but I'm sure that I'm 
 
 I would actually suggest that we don't use a team name for app code. Teams change. Apps move to other teams. I've been through it before - it's miserable. We want our repo names to match what people actually, verbally call the code. If an org already has an "app1" anywhere in it, then no other team should call their app "app1". If an app does move to another team, we would still have to migrate it in the infra and deploy code, but at least the app code wouldn't have to change.
 
-# Code should be separated depending on what type of code it is. Terraform code and Flux YAML should not be in the same directory. I'm debating the merits of putting them in the same repository and this is all I've come up with:
-
-# 
-
-# - Pro: we have one less repo to manage.
-
-# - Con: It's harder to start from boilerplate (flux2-kustomize-helm-example and terraform blueprints)
-
-# 
-
-# I personally feel more comfortable separating the different types of code into separate repos.
-
 ```
 app1:
 
@@ -274,10 +262,3 @@ team2_prod:
     infra/
     deploy/
 ```
-
-Is it worthwhile to put different types of code in different buckets? Keep all the terraform code separate from the flux code?
-
-- one less repo to manage
-
-* can't start from boilerplate quite as easily
-  #+ don't have to have another repo if we want to separate flux into "infra" and "deploy" sections
