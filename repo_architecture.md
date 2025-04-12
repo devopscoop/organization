@@ -7,7 +7,7 @@ How should we structure our code repositories? A thought experiment.
 Assumptions:
 
 - We use git. There are a few other [distributed, open version control systems](https://en.wikipedia.org/wiki/List_of_version-control_software), but git is good - everyone knows git.
-- Our organization builds software that people rely on, so we must follow decent security and compliance practices. [Separation of Duties](https://en.wikipedia.org/wiki/Separation_of_duties) suggests that only developers should approve changes to application code, and only operators should approve changes to the production environment.
+- Our organization builds software that people rely on, so we must follow decent security and compliance practices. [Separation of Duties](https://en.wikipedia.org/wiki/Separation_of_duties) suggests that only Dev should approve changes to application code, and only Ops should approve changes to the production environment.
 - Applications are packaged in containers.
 - Containers run in Kubernetes.
 - For infrastructure, we're using declarative, not imperative, code.
@@ -16,7 +16,7 @@ Assumptions:
 - We use CI/CD environments[[1]](https://docs.gitlab.com/ee/ci/environments/)[[2]](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment) to ensure that a PR can't leak secrets or change production infrastructure.
 - We avoid putting variables and secrets in our git platform provider. It's not GitOps, and it's a pain to migrate all of that if you ever change providers. (The last three companies I've worked for have been in the middle of a migration from one git provider to another...)
 - We use [trunk-based development](https://trunkbaseddevelopment.com/).
-- We prefer to use community-supported Helm charts to deploy workloads in Kubernetes.
+- We prefer to use community-supported Helm charts to deploy workloads in Kubernetes. (We should have a proxy for all helm charts.)
 - We use Flux instead of Helmfile, because "pull" paradigms offer some security and consistency advantages. We don't use ArgoCD, because it doesn't install true Helm releases, and it doesn't work with SOPS.
 - We have one Kubernetes cluster per team per deployment environment, with a naming scheme like "team1-dev"
 
@@ -24,23 +24,23 @@ Assumptions:
 
 ### Application (app)
 
-This is the source code for an application, API, or service. It's written in Python, Golang, Node.js, Rust, etc. It has a Dockerfile, a pipeline to build a container image, and optionally a job to update the deployment code with the new image tag.
+This is the source code for an application, API, or service. This also includes local dev tooling like Docker Compose, skaffold, etc. It's written in Python, Golang, Node.js, Rust, etc. It has a Dockerfile, a pipeline to build a container image, and optionally a job to update the deployment code with the new image tag.
 
-Only developers can approve and merge changes to app code.
+Only Dev can approve and merge changes to app code.
 
 ### Infrastructure (infra)
 
 Infrastructure as Code (IaC) defines: cloud resources, networks, servers, Kubernetes clusters, DNS providers (e.g., Cloudflare), etc. This code uses one of the common IaC tools like OpenTofu/Terraform or Ansible. It should have a pipeline that shows the plan, so reviewers can see what will change before the code is merged to the default branch. A merge to the default branch will apply the code.
 
-Only operators can approve and merge changes to infra code in production environments. Developers can approve and merge changes to infra code for non-prod environments.
+Only Ops can approve and merge changes to infra code in production environments. Dev can approve and merge changes to infra code for non-prod environments.
 
 ### Deployment (deploy)
 
 This code contains the configuration for a specific [deployment environment](https://en.wikipedia.org/wiki/Deployment_environment) (e.g., dev, test, stage, prod, etc.) It should have the image that's being deployed, number of replicas, environment variables, secrets (or pointers to the secrets), etc. It should also contain the configuration for any supporting services like PostgreSQL databases, Redis, Rabbit, etc. It's probably going to be a bunch of Helm values that are applied with Flux.
 
-In the Kubernetes world, I would also include the ingress controller, cert-manager, external-dns, and similar services in this repo, just because they're also going to be deployed as Helm releases. One could argue that those should go in the infra code, but that would mean that we would have to have Flux watching multiple repos, and that feels like an anti-pattern. That could lead to a situation where the same thing is defined slightly differently in two repos and Flux will constantly vacillate between the two different configurations. I'm less concerned about giving Devs access to change these basic services in non-prod environments than I am about mixing different types of code. But in my recommendation at the bottom, I have the `infra` and `deploy` code in directories inside a single repo, so perhaps we could split it into `tf_infra`, `flux_infra`, and `deploy`?
+In the Kubernetes world, I would also include the ingress controller, cert-manager, external-dns, and similar services in this repo, just because they're also going to be deployed as Helm releases. One could argue that those should go in the infra code, but that would mean that we would have to have Flux watching multiple repos, and that feels like an anti-pattern. That could lead to a situation where the same thing is defined slightly differently in two repos and Flux will constantly vacillate between the two different configurations. I'm less concerned about giving Dev access to change these basic services in non-prod environments than I am about mixing different types of code. But in my recommendation at the bottom, I have the `infra` and `deploy` code in directories inside a single repo, so perhaps we could split it into `tf_infra`, `flux_infra`, and `deploy`?
 
-Only operators can approve and merge changes to deploy code in production environments. Developers can approve and merge changes to deploy code for non-prod environments.
+Only Ops can approve and merge changes to deploy code in production environments. Dev can approve and merge changes to deploy code for non-prod environments.
 
 ## Roles
 
@@ -62,7 +62,7 @@ Some orgs have multiple Dev teams, and a single Ops team that supports all of th
 
 ### Cross-functional Team
 
-Other orgs have an [embedded](https://en.wikipedia.org/wiki/Site_reliability_engineering#Embedded) model where each team has their own operators, or the most senior full-stack developer acts as an operator (this usually doesn't go well once they start getting real traffic.)
+Other orgs have an [embedded](https://en.wikipedia.org/wiki/Site_reliability_engineering#Embedded) model where each team has their own Ops person, or the most senior full-stack Dev acts as an Ops person (this usually doesn't go well once they start getting real traffic.)
 
 ## Architectures
 
@@ -156,7 +156,7 @@ team2:
 
 Obvious Flaws:
 
-- Compliance normally requires separation of development from deployment. It would be difficult to ensure that only developers can merge app code, and only operators can merge prod code.
+- Compliance normally requires separation of development from deployment. It would be difficult to ensure that only Dev can merge app code, and only Ops can merge prod code.
 
 ### Repo per Team per Role
 
@@ -189,11 +189,11 @@ team2_Ops:
 
 You know, I don't hate this model...
 
-This would allow us to give repo-level permissions to the correct groups easily. Developers can approve changes to team1_Dev, both developers and operators can approve changes in the team1_DevOps repo, and operators can approve changes to the team1_Ops repo.
+This would allow us to give repo-level permissions to the correct groups easily. Dev can approve changes to team1_Dev, both Dev and Ops can approve changes in the team1_DevOps repo, and Ops can approve changes to the team1_Ops repo.
 
 I question whether the apps aren't important enough to get their own repos, but if it's the same group of people working on the same set of apps, I can see how it would make sense for them to be in the same repo...
 
-As an operator, having to flip from `team1_DevOps/dev_infra` to `team1_Ops/prod_infra` feels a little weird.
+As an Ops person, having to flip from `team1_DevOps/dev_infra` to `team1_Ops/prod_infra` feels a little weird.
 
 ### Repo per App or Deployment Environment
 
