@@ -18,6 +18,7 @@ Assumptions:
 - We use [trunk-based development](https://trunkbaseddevelopment.com/).
 - We prefer to use community-supported Helm charts to deploy workloads in Kubernetes.
 - We use Flux instead of Helmfile, because "pull" paradigms offer some security and consistency advantages. We don't use ArgoCD, because it doesn't install true Helm releases, and it doesn't work with SOPS.
+- We have one Kubernetes cluster per team per deployment environment, with a naming scheme like "team1-dev"
 
 ## Types of code
 
@@ -226,23 +227,23 @@ team2_prod:
     deploy/
 ```
 
-This feels the closest to a common sense structure to me, but I'm sure that I'm biased by my previous work experience. The only issue with this structure is that we are probably hardcoding the team's name in the repo names. Teams change. Apps move to other teams. I've been through it before. It's miserable.
+This feels the closest to a common sense structure to me, but I'm sure that I'm biased by my previous work experience.
 
-### TL;DR: Recommended Architecture
+### Recommended Architecture
 
-I would actually suggest that we don't use the team name at all. We want our repos to have the shortest names and closely match what people actually, verbally call this code. If an org already has an "app1" anywhere in it, then no other team should call their app "app1". Perhaps if an org has multiple Ops teams, I'd just prefix the environment repo with the Ops team's name. I'd simplify this to:
+I would actually suggest that we don't use a team name for app code. Teams change. Apps move to other teams. I've been through it before - it's miserable. We want our repo names to match what people actually, verbally call the code. If an org already has an "app1" anywhere in it, then no other team should call their app "app1". If an app does move to another team, we would still have to migrate it in the infra and deploy code, but at least the app code wouldn't have to change.
 
 ```
 app1:
 
 app2:
 
-ops1_dev:
+team1_dev:
   main:
     infra/
     deploy/
 
-ops1_prod:
+team1_prod:
   main:
     infra/
     deploy/
@@ -251,12 +252,12 @@ app3:
 
 app4:
 
-ops2_dev:
+team2_dev:
   main:
     infra/
     deploy/
 
-ops2_prod:
+team2_prod:
   main:
     infra/
     deploy/
