@@ -8,7 +8,7 @@ We, the members of devops.coop, hereby establish this Governance Document to gui
 
 1.1 **Name:** The organization shall be known as devops.coop, hereafter referred to as "the Cooperative".
 
-1.2 **Purpose:** The purpose of the Cooperative is create and support an evolving, opinionated, infrastructure as code (IaC) repository based on free, libre, open source software (FOSS) that can be used to build production-ready, compliant, secure infrastructure. The Cooperative shall operate on democratic principles, ensuring the collective ownership, control, and benefit of its members.
+1.2 **Purpose:** The purpose of the Cooperative is create and support evolving, opinionated, infrastructure as code (IaC) repositories based on free, libre, open source software (FOSS) that can be used to build production-ready, compliant, secure infrastructure. The Cooperative shall operate on democratic principles, ensuring the collective ownership, control, and benefit of its members.
 
 **2. Cooperative Principles**
 
